@@ -1,8 +1,8 @@
 # CS224N-FINAL
-Final project for CS224N. The project extracts data from resumes and finds the best possible job
+Final project for CS224N. The project extracts data from resumes using en [ELMo](https://allennlp.org/elmo)
 
 
-# Resume job matcher
+# Custom ELMo NER model for job matching
 A tool for extracting data from resumes and finding the best job opportunity
 
 ----------
@@ -14,21 +14,25 @@ The inner workings of job search engines like [Linkedin](Linkedin.com) and [Inde
 
 ## Introduction
 Nowadays, there are many job search engines that require minimal user data, just an updated resume. These search engines have methods to extract work, education and general expertise from  uploaded resumes. Additionally, whenever a user searches for a job without a description or title (using Linkedin), it will automatically find potential job interests in the defined área (if one isn't specified, it does a world wide search). 
+
 The original scope of this project was to match job requests with applicants and applicants with job requests. However, the scope would grow too large, as a training and testing dataset was needed for both aplicants and job posters, so it was reduced to finding relationships between job titles found within resumes.
+
 Developing a funcional system similar in any way to Linkedin would be impossible in the given time, but developing a core module that could be used and extended into a fully functional system is far more feasable.
 
 ## Core modules used in this project
-- pandas            - for csv loading and reading
-- numpy             - for efficient array and tuple manipulation
-- tensorflow_hub    - as RNN main engine
-- tensorflow        - as ML framework backend
-- keras             - as ML framework
-- tika              - for extraction of data from pdf files
+- [pandas](https://pandas.pydata.org/)            - for csv loading and reading
+- [numpy](https://numpy.org/)             - for efficient array and tuple manipulation
+- [tensorflow_hub](https://www.tensorflow.org/hub)    - as RNN main engine
+- [tensorflow](https://www.tensorflow.org/)        - as ML framework backend
+- [keras](https://keras.io/)             - as ML framework
+- [tika](https://pypi.org/project/tika/)              - for extraction of data from pdf files
 
 ## Related Work
 NER is a field of NLP that's in constant development, as there's a lack of formally described techniques for identifying named entities that appear within natural language sentences.
 Multiple libraries have been developed, such as [SpaCy](https://spacy.io/) and [OpenNLP](https://opennlp.apache.org/), however they're still young, having less than 10 years of age as of 2020.
-An approach to [GloVe](https://nlp.stanford.edu/projects/glove/) (global vectos for word representation) called ELMo that simplifies NER has been in discussion for [quite a while now](https://arxiv.org/pdf/1802.05365.pdf)
+An approach to [GloVe](https://nlp.stanford.edu/projects/glove/) (global vectos for word representation) called ELMo that simplifies NER has been in discussion for [quite a while now](https://arxiv.org/pdf/1802.05365.pdf).
+
+This project was heavily inspired by [this tutorial](https://www.analyticsvidhya.com/blog/2019/03/learn-to-use-elmo-to-extract-features-from-text/)
 
 ## Approach
 [Allen NLP](https://allennlp.org/elmo) describes ELMo as:
@@ -62,6 +66,8 @@ After the NER dataset has been loaded, it will be fed 220 unique resumes that we
  - `Skills`
  - `Location`
  - `Email Address`
+ 
+ This human labeled dataset was can be found on [dataturks](https://dataturks.com/projects/abhishek.narayanan/Entity%20Recognition%20in%20Resumes)
 
 ### Evaluation Method
 A comparison with the originally trained model and the custom label trained model will be done. Favoring the usage of the StanfordNLP labels over the custom ones.
@@ -187,10 +193,12 @@ Karnataka	    B-geo
 As you can see, some predicted tags changed, mostly those that used to be simple non named objects.
 There's conflict in context definition with `Location` and `B-geo`, as they mean the same thing, but the name of the tags are different (this also happens with `B-org` - `Companies worked at`, `gpe` - `Location` and other labels).
 
+This model did extremely well with a high accuracy due to the implementation of the [tensorflow hub ELMo](https://tfhub.dev/google/elmo/3) as the core model
+
 The model did some mix and matching between new and old tags, proving the flexibility of this NER architecture.
 
 ### Conclusions for future work
 - A mapping between the custom tags and the StanfordNRE standard tags should be made, to avoid tag overriding (as seen above with `Name` and `per`). This could be achieved by implementing a simple mapper that matches ocurrances of custom tags to the standarized ones.
 - The names of any custom tags implemented into the model should be shortened (`Designation` to `des`, `Graduation year` to `gdy` and so on).
 -  ELMo has proven to be capable enough to understand complex relationships between words, for example 'Devops Engineer' forming a same `Designation` in the given context yet modify it's existing tag relations with newly implemented ones. This type of flexibility and lack of language tokenization opens the door for context processing in other languages with vastly different grammatical structures (Spanish, Chinese, Welsh, etc.).
-]
+- This project mostly uses tensorflow v1, as tue current LTS is v2, some design features should be modified to adapt to new standards
