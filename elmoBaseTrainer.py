@@ -101,6 +101,9 @@ cp_callback = tf.keras.callbacks.ModelCheckpoint(
     save_weights_only=True,
     verbose=1
 )
+if VERBOSE:
+    tfv1.keras.utils.plot_model(model, to_file='./images/model_plot.png', show_shapes=True, show_layer_names=True)
+
 history = model.fit(
     np.array(words_tr),
     tags_tr,
