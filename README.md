@@ -123,8 +123,12 @@ Trainable params: 800,775,104
 Non-trainable params: 0
 __________________________________________________________________________________________________
 ```
-
 ---
+
+Model Visualization using keras.utils.plot_model
+
+![Model Visualization](https://github.com/Byronamh/CS224N-FINAL/blob/master/images/model_plot.png?raw=true)
+
 
 `python elmoResumeTrainer.py`
 
